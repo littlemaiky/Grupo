@@ -6,22 +6,22 @@ const nombre = Joi.string() //valor
                   .alphanum()
                   .min(8)
                   .max(20);
-const codigo = Joi.number() //valor
+const cantidad = Joi.number() //valor
                   .integer()
                   .min(2);
 
-const createInsumoSchema = Joi.object({
+const createPaqueteriaSchema = Joi.object({
   nombre: nombre.required(),//etiqueta < >Valor
-  codigo: codigo.required()
+  cantidad: cantidad.required()
 });
 //creación de los objetos de validación, los esquemas
-const updateInsumoSchema = Joi.object({
+const updatePaqueteriaSchema = Joi.object({
   nombre: nombre,
-  codigo: codigo
+  cantidad: cantidad
 });
 
-const getInsumoSchema = Joi.object({
+const getPaqueteriaSchema = Joi.object({
   id: id.required()
 });
 
-module.exports = { createInsumoSchema, updateInsumoSchema, getInsumoSchema };
+module.exports = { createPaqueteriaSchema, updatePaqueteriaSchema, getPaqueteriaSchema };

@@ -2,35 +2,35 @@ const { rejects } = require('assert');
 const crypto = require('crypto'); //para crear codigos UUID
 const boom = require('@hapi/boom');
 
-class insumoService {
+class paqueteriaService {
 
   constructor() {
-    this.insumos = [];
+    this.paqueterias = [];
     this.generate(10);
   }
 
   generate(limite) {
     for (let index = 0; index < limite; index++) {
-      this.insumos.push({
+      this.paqueterias.push({
         id: crypto.randomUUID(), //da el ID
         nombre: 'cliente ' + index, //genera los nombres
-        codigo: 10000 + Math.floor(Math.random()*190000000000),
-        //estaBloqueado: Math.random() < 0.25 //valor boolean
+        cantidad: 1 + Math.floor(Math.random()*190),
+        estaBloqueado: Math.random() < 0.25 //valor boolean
       }); //genera DNI aleatorios entre 0 y 1
     }
   }
 
   create (data) {
-    const nuevoinsumo = {
+    const nuevopaqueteria = {
       id: crypto.randomUUID(), //creo productos y le coloco us ID
       ...data //desempaquetado
     };
-    this.insumos.push(nuevoinsumo);
-    return nuevoinsumo; // devuelvo el nuevo producto en el metodo create
+    this.paqueterias.push(nuevopaqueteria);
+    return nuevopaqueteria; // devuelvo el nuevo producto en el metodo create
   }
 
   async find() {
-    return this.insumos;
+    return this.paqueterias;
     //
     //
     //
@@ -42,40 +42,40 @@ class insumoService {
   }
 
   async findOne(id) {
-    const insum =  this.insumos.find(insumo => { //seguarda en la variable insum
-      return insumo.id === id;
+    const paquet =  this.paqueterias.find(paqueteria => { //seguarda en la variable insum
+      return paqueteria.id === id;
     }); //!ultizamos la negacición(!) para ver si es no es producto
-    if (!insum) { //consulta del error
+    if (!paquet) { //consulta del error
       throw boom.notFound('Producto no encontrado'); //lanza un error boom
     }
-    return insum; //si no es un error devuelve el insum
+    return paquet; //si no es un error devuelve el insum
   }
 
   async update(id , changes) {
-    const index = this.insumos.findIndex(insumo =>{
-      return insumo.id === id;
+    const index = this.paqueterias.findIndex(paqueteria =>{
+      return paqueteria.id === id;
     });
     if (index === -1) {
       throw boom.notFound('Producto no encontrado');
     }
-    const insumo = this.insumos[index];
-    this.insumos[index] = {
-      ...insumo,
+    const paqueteria = this.paqueterias[index];
+    this.paqueterias[index] = {
+      ...paqueteria,
       ...changes
     };
-    return this.insumos[index];
+    return this.paqueterias[index];
   }
 
   async delete(id) {
-    const index = this.insumos.findIndex(insumo =>{
-      return insumo.id === id;
+    const index = this.paqueterias.findIndex(paqueteria =>{
+      return paqueteria.id === id;
     });
     if (index === -1) {
       throw boom.notFound('Producto no encontrado');
     }
-    this.insumos.splice(index, 1);
+    this.paqueterias.splice(index, 1);
     return { id };
   }
 }
 
-module.exports = insumoService
+module.exports = paqueteriaService

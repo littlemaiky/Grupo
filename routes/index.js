@@ -3,7 +3,8 @@ const productsRouter = require('./product.router');
 const clientesRouter = require('./clientes.router');
 const insumosRouter = require ('./insumos.router');
 const trabajadoresRouter = require('./trabajadores.router');
-const ventasRouter = require('./ventas.router')
+const ventasRouter = require('./ventas.router');
+const paqueteriasRouter = require('./paqueterias.router');
 
 function routerApi(app) {
   const routerv1 = express.Router();
@@ -25,6 +26,10 @@ function routerApi(app) {
   const routerv5 = express.Router();
   app.use('/api/v5', routerv5);
   routerv5.use('/ventas', ventasRouter);
+
+  const routerv6 = express.Router();
+  app.use('/api/v6', routerv6);
+  routerv6.use('/paqueterias', paqueteriasRouter);
 }
 
 module.exports = routerApi;
