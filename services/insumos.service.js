@@ -1,6 +1,7 @@
 const { rejects } = require('assert');
 const crypto = require('crypto'); //para crear codigos UUID
 const boom = require('@hapi/boom');
+const { models } = require('./../libs/sequelize');//extraemos los modelos
 
 class insumoService {
 
@@ -13,24 +14,25 @@ class insumoService {
     for (let index = 0; index < limite; index++) {
       this.insumos.push({
         id: crypto.randomUUID(), //da el ID
-        nombre: 'cliente ' + index, //genera los nombres
+        insumo: 'insumo ' + index, //genera los nombres
         codigo: 10000 + Math.floor(Math.random()*190000000000),
         //estaBloqueado: Math.random() < 0.25 //valor boolean
       }); //genera DNI aleatorios entre 0 y 1
     }
   }
 
-  create (data) {
-    const nuevoinsumo = {
+  async create (data) {
+    const nuevoInsumo = {
       id: crypto.randomUUID(), //creo productos y le coloco us ID
       ...data //desempaquetado
     };
-    this.insumos.push(nuevoinsumo);
-    return nuevoinsumo; // devuelvo el nuevo producto en el metodo create
+    const salida = await models.Insumo.create(nuevoInsumo);
+    return salida; // devuelvo el nuevo producto en el metodo create
   }
 
   async find() {
-    return this.insumos;
+    const salida = await models.Insumo.findAll();
+    return salida;
     //
     //
     //
@@ -42,39 +44,50 @@ class insumoService {
   }
 
   async findOne(id) {
-    const insum =  this.insumos.find(insumo => { //seguarda en la variable insum
-      return insumo.id === id;
-    }); //!ultizamos la negacición(!) para ver si es no es producto
+    const insum = await models.Insumo.findByPk(id);
     if (!insum) { //consulta del error
       throw boom.notFound('Producto no encontrado'); //lanza un error boom
     }
-    return insum; //si no es un error devuelve el insum
+    return insum;
+//    const insum =  this.insumos.find(insumo => { //seguarda en la variable insum
+//      return insumo.id === id;
+//    }); //!ultizamos la negacición(!) para ver si es no es producto
+//    if (!insum) { //consulta del error
+//      throw boom.notFound('Producto no encontrado'); //lanza un error boom
+//    }
+//    return insum; //si no es un error devuelve el insum
   }
 
   async update(id , changes) {
-    const index = this.insumos.findIndex(insumo =>{
-      return insumo.id === id;
-    });
-    if (index === -1) {
-      throw boom.notFound('Producto no encontrado');
-    }
-    const insumo = this.insumos[index];
-    this.insumos[index] = {
-      ...insumo,
-      ...changes
-    };
-    return this.insumos[index];
+    const insum = await this.findOne(id);
+    const salida = await insum.update(changes);
+    return salida;
+//    const index = this.insumos.findIndex(insumo =>{
+//      return insumo.id === id;
+//    });
+//    if (index === -1) {
+//      throw boom.notFound('Producto no encontrado');
+//    }
+//    const insumo = this.insumos[index];
+//    this.insumos[index] = {
+//      ...insumo,
+//      ...changes
+//    };
+//    return this.insumos[index];
   }
 
   async delete(id) {
-    const index = this.insumos.findIndex(insumo =>{
-      return insumo.id === id;
-    });
-    if (index === -1) {
-      throw boom.notFound('Producto no encontrado');
-    }
-    this.insumos.splice(index, 1);
+    const insum = await this.findOne(id);
+    await insum.destroy();
     return { id };
+//    const index = this.insumos.findIndex(insumo =>{
+//      return insumo.id === id;
+//    });
+//    if (index === -1) {
+//      throw boom.notFound('Producto no encontrado');
+//    }
+//    this.insumos.splice(index, 1);
+//    return { id };
   }
 }
 

@@ -2,8 +2,7 @@ const Joi = require('joi');
 //creacion de los campos que vamos a validar
 const id = Joi.string()
               .uuid();//campo id
-const nombre = Joi.string() //valor
-                  .alphanum()
+const insumm = Joi.string() //valor
                   .min(8)
                   .max(20);
 const codigo = Joi.number() //valor
@@ -11,12 +10,12 @@ const codigo = Joi.number() //valor
                   .min(2);
 
 const createInsumoSchema = Joi.object({
-  nombre: nombre.required(),//etiqueta < >Valor
+  insumm: insumm.required(),//etiqueta < >Valor
   codigo: codigo.required()
 });
 //creación de los objetos de validación, los esquemas
 const updateInsumoSchema = Joi.object({
-  nombre: nombre,
+  insumm: insumm,
   codigo: codigo
 });
 

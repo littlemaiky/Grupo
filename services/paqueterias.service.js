@@ -1,6 +1,7 @@
 const { rejects } = require('assert');
 const crypto = require('crypto'); //para crear codigos UUID
 const boom = require('@hapi/boom');
+const { models } = require('./../libs/sequelize');
 
 class paqueteriaService {
 
@@ -20,17 +21,18 @@ class paqueteriaService {
     }
   }
 
-  create (data) {
-    const nuevopaqueteria = {
+  async create (data) {
+    const nuevoPaqueteria = {
       id: crypto.randomUUID(), //creo productos y le coloco us ID
       ...data //desempaquetado
     };
-    this.paqueterias.push(nuevopaqueteria);
-    return nuevopaqueteria; // devuelvo el nuevo producto en el metodo create
+    const salida = await models.Paqueteria.create(nuevoPaqueteria);
+    return salida; // devuelvo el nuevo producto en el metodo create
   }
 
   async find() {
-    return this.paqueterias;
+    const salida = await models.Paqueteria.findAll();
+    return salida;
     //
     //
     //
@@ -42,39 +44,50 @@ class paqueteriaService {
   }
 
   async findOne(id) {
-    const paquet =  this.paqueterias.find(paqueteria => { //seguarda en la variable insum
-      return paqueteria.id === id;
-    }); //!ultizamos la negacición(!) para ver si es no es producto
+    const paquet = await models.Paqueteria.findByPk(id);
     if (!paquet) { //consulta del error
       throw boom.notFound('Producto no encontrado'); //lanza un error boom
     }
-    return paquet; //si no es un error devuelve el insum
+    return paquet;
+//    const paquet =  this.paqueterias.find(paqueteria => { //seguarda en la variable insum
+//      return paqueteria.id === id;
+//    }); //!ultizamos la negacición(!) para ver si es no es producto
+//    if (!paquet) { //consulta del error
+//      throw boom.notFound('Producto no encontrado'); //lanza un error boom
+//    }
+//    return paquet; //si no es un error devuelve el insum
   }
 
   async update(id , changes) {
-    const index = this.paqueterias.findIndex(paqueteria =>{
-      return paqueteria.id === id;
-    });
-    if (index === -1) {
-      throw boom.notFound('Producto no encontrado');
-    }
-    const paqueteria = this.paqueterias[index];
-    this.paqueterias[index] = {
-      ...paqueteria,
-      ...changes
-    };
-    return this.paqueterias[index];
+    const paquet = await this.findOne(id);
+    const salida = await paquet.update(changes);
+    return salida;
+//    const index = this.paqueterias.findIndex(paqueteria =>{
+//      return paqueteria.id === id;
+//    });
+//    if (index === -1) {
+//      throw boom.notFound('Producto no encontrado');
+//    }
+//    const paqueteria = this.paqueterias[index];
+//    this.paqueterias[index] = {
+//      ...paqueteria,
+//      ...changes
+//    };
+//    return this.paqueterias[index];
   }
 
   async delete(id) {
-    const index = this.paqueterias.findIndex(paqueteria =>{
-      return paqueteria.id === id;
-    });
-    if (index === -1) {
-      throw boom.notFound('Producto no encontrado');
-    }
-    this.paqueterias.splice(index, 1);
+    const product = await this.findOne(id);
+    await product.destroy();
     return { id };
+//    const index = this.paqueterias.findIndex(paqueteria =>{
+//      return paqueteria.id === id;
+//    });
+//    if (index === -1) {
+//      throw boom.notFound('Producto no encontrado');
+//    }
+//    this.paqueterias.splice(index, 1);
+//    return { id };
   }
 }
 
